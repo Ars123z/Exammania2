@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "main",
     "chat",
     "videos",
+    "django_extensions",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

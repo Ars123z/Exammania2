@@ -1,7 +1,7 @@
 {% extends "main/base.html" %}
 {% block body %}
 <div id="mainblock" class="container body">
-
+    <h1 style="color:aliceblue; font-style: italic; text-align: center;">{{Chapter.name}}<span style="margin-left: 15px;">{{Exercise.name}}</span></h1>
     <p style="font-style: italic;color:orange;font-size: 1em;">Q{{no}}.&nbsp;{{body|safe}}</p>
     <p style="font-size: o.8em;">{{level}}</p>
 </div>
@@ -9,19 +9,21 @@
     <div class="row">
         {% for option in options %}
         <div class="col-lg-6 col-md-6 col-sm-12">
-            <span style="display: inline-block; height: 2em;margin-bottom: 10px;">{{forloop.counter}}.&nbsp;</span>
+            <div class="option" data-option="{{ forloop.counter }}">
             {% if option in correct_options %}
-            <span
-                style="font-style: italic; font-size: 1em; display: inline-block; height: 2em; border: 1px solid red; margin-bottom:10px; padding-left: 5px; padding-right: 10px; border-radius: 10px; width: 220px;"
-                class="answer">{{ option.content }}</span>
+            <div
+                style="font-style: italic; font-size: 1em; display: inline-block; border: 1px solid red; margin-bottom:10px; padding-left: 5px; padding-top: 15px; padding-bottom: 15px; padding-right: 10px; border-radius: 10px; cursor:pointer"
+                class="answer">{{ forloop.counter }}.&nbsp;&nbsp;{{ option.content }}</div>
             {% else %}
-            <span
-                style="font-style: italic; font-size: 1em; display: inline-block; height: 2em; border: 1px solid red; margin-bottom:10px; padding-left: 5px; padding-right: 10px; border-radius: 10px; width: 220px;"
-                class="wrong">{{ option.content }}</span>
+            <div
+                style="font-style: italic; font-size: 1em; display: inline-block; border: 1px solid red; margin-bottom:10px; padding-left: 5px; padding-bottom: 15px; padding-top: 15px; padding-right: 10px; border-radius: 10px; cursor:pointer"
+                class="wrong">{{ forloop.counter }}.&nbsp;&nbsp; {{ option.content }}</div>
             {% endif %}
+            </div>
         </div>
         {% endfor %}
     </div>
+</div>
 </div>
 <div class="container">
     <div class="row">
@@ -56,7 +58,7 @@
                 </form>
                 {% endif %}
             </li>
-            {% if no == 90 %}
+            {% if no == count %}
             <li class="page-item">
                 <form method="get" action="{% url 'main:exercise_solution' Book Chapter Exercise no|add:-1 %}">
                     <button type="submit" class="btn btn-primary disabled">Next</button>
@@ -76,6 +78,21 @@
 
 {% block script %}
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const optionElements = document.querySelectorAll('.option');
+
+    optionElements.forEach(function (optionElement) {
+        optionElement.addEventListener('click', function () {
+            const childDiv = optionElement.querySelector('.answer, .wrong');
+
+            if (childDiv) {
+                // Change the background color of the child div based on correctness.
+                childDiv.style.backgroundColor = childDiv.classList.contains('answer') ? 'green' : 'red';
+            }
+        });
+    });
+});
+
     function showAnswer() {
         // Get all elements with the `.answer` class.
         const answerElements = document.querySelectorAll('.answer');
