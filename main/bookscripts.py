@@ -2,7 +2,7 @@ import csv
 from .models import BookQuestion, BookQuestionOption, Exercise, ExerciseQuestionIntermidiate
 
 def populate_database(csv_file_path):
-    exercise_name= "3(D)"
+    exercise_name= "5(A)"
     exercise = Exercise.objects.get(name=exercise_name)
     with open(csv_file_path, 'r', encoding='utf-8') as file:
         reader = csv.reader(file, delimiter="|")
@@ -51,7 +51,14 @@ def populate_database(csv_file_path):
         
 
             question.correct_options.set(correct_options)
-            ExerciseQuestionIntermidiate.objects.create(exercise=exercise, question=question)
+            question.save()
+            try:
+                Intermidiate = ExerciseQuestionIntermidiate.objects.get(exercise= exercise, question= question)
+            except ExerciseQuestionIntermidiate.DoesNotExist:
+                ExerciseQuestionIntermidiate.objects.create(exercise=exercise, question=question)
+                
+                
+
             print(question_body)
 
 

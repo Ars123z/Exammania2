@@ -44,3 +44,6 @@ admin.site.register(Exercise)
 admin.site.register(Chapter)
 admin.site.register(Book)
 admin.site.register(ExerciseQuestionIntermidiate, ExerciseQuestionIntermidiateAdmin)
+
+admin.site.register(UserSubmittedBookAnswer)
+admin.site.register(BookQuestionFeedback)

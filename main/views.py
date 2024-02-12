@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Exam, Book, Chapter, Exercise, ExamQuestion
+from .models import Exam, Book, Chapter, Exercise, ExamQuestion, UserSubmittedBookAnswer, BookQuestionFeedback
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
 from django.urls import reverse
 from random import sample
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from users.models import UserProfile
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
-@login_required
 def index(request):
   return render(request, "main/index.html")
      
@@ -65,6 +66,7 @@ def exercisesolution(request, book_name, chapter_name, exercise_name, question_n
     # Use get_object_or_404 to retrieve the specific exercise for the given chapter
     exercise = get_object_or_404(Exercise, chapter=chapter, name=exercise_name)
     questions = exercise.questions.all()
+    total_count = exercise.questions.all().count()
 
     
     question= questions[question_no]
@@ -84,8 +86,8 @@ def exercisesolution(request, book_name, chapter_name, exercise_name, question_n
         "options":question.options.all(),
         "correct_options":question.correct_options.all(),
         "level":question.difficulty_level,
-        "no":no
-        
+        "no":no,
+        "count": total_count
         
     }
 
@@ -243,3 +245,47 @@ def review_test(request):
 
     return render(request, 'main/review_test.html', context)
 
+@csrf_exempt
+def feedback(request):
+    if request.method == 'POST':
+        print(request)
+        try:
+            json_string = request.body.decode('utf-8')
+          # Decode to string
+            data = json.loads(json_string)
+             # Parse JSON string
+            # Access and use the data:
+            if 'feedback' in data:
+              print(data)
+              print(f"feedback {data.get('feedback')}")
+              answer_obj = BookQuestionFeedback(
+                    book=data.get('book'),
+                    chapter=data.get('chapter'),
+                    exercise=data.get('exercise'),
+                    no=data.get('no'),
+                    feedback=data.get('feedback'),  # Assign answer text
+                )
+              answer_obj.save()
+
+            else:
+              print(data)
+              print(f"answer {data.get('answer')}")
+              answer_obj = UserSubmittedBookAnswer(
+                    book=data.get('book'),
+                    chapter=data.get('chapter'),
+                    exercise=data.get('exercise'),
+                    no=data.get('no'),
+                    answer=data.get('answer'),  # Assign answer text
+                )
+            answer_obj.save()
+               
+            
+            
+            # ... handle other fields, validation, etc.
+            return JsonResponse({'success': True, 'message': 'Data processed successfully'})
+        except:
+           return JsonResponse({'success': False, 'error': 'Invalid request method'})
+        
+    else:
+        # Handle other HTTP methods or error cases
+        return HttpResponseNotAllowed(['POST'])
