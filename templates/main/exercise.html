@@ -8,7 +8,13 @@ tinymce.init({
     selector: '#feedbacktext',
     plugins: 'a11ychecker advcode advlist anchor autolink codesample colorpicker contextmenu fullscreen help image imagetools lists media paste powerpaste preview save searchreplace table template textcolor visualblocks wordcount',
     toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | indent outdent | numlist bullist | link image media | forecolor backcolor | help',
-    menubar: false // Hide the default menubar (optional)
+    menubar: false, // Hide the default menubar (optional)
+    content_style: `
+                 body {
+                  background-color: white;
+                  color:black;
+                 }
+                 `,
 });
 </script>
 
@@ -17,13 +23,20 @@ tinymce.init({
         selector: '#conanswertext',
         plugins: 'a11ychecker advcode advlist anchor autolink codesample colorpicker contextmenu fullscreen help image imagetools lists media paste powerpaste preview save searchreplace table template textcolor visualblocks wordcount',
         toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | indent outdent | numlist bullist | link image media | forecolor backcolor | help',
-        menubar: true, // Hide the default menubar (optional)
+        menubar: false, 
+        content_style: `
+                 body {
+                  background-color: white;
+                  color: black;
+                 }
+                 `,
     });
 </script>
 <style>
     .feedback .feedback-area {
          font-size: 1.2em;
-}
+    }
+    
 </style>
 {% endblock %}
 
