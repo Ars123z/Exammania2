@@ -19,6 +19,7 @@ urlpatterns = [
     path('submit-test/',views.submit_test, name='submit_test'),
     path('review-test/', views.review_test, name="review_test"),
     path('feedback/', views.feedback, name="feedback"),
+    
 ]
 
 
