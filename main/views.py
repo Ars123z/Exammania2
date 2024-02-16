@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from users.models import UserProfile
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.core import serializers
 
 
 def index(request):
@@ -139,7 +140,26 @@ def notes_details(request, subject, topic, chapter):
    else:
         return HttpResponseRedirect(reverse('join'))
 
-
+def wrules(request, subject):
+  if subject=="Physics":
+    return render(request, "main/working_rules/Physics/index.html")
+  
+  if subject=="Chemistry":
+    return render(request, "main/working_rules/Chemistry/index.html")
+  
+  if subject=="Maths":
+    return render(request, "main/working_rules/Maths/index.html")
+  
+def wrules_details(request, subject, topic, chapter):
+   user_profile= UserProfile.objects.get(user=request.user)
+   if user_profile.is_subscriber:
+      timezone= user_profile.subscription_end_date.tzinfo
+   if user_profile.is_subscriber and user_profile.subscription_end_date > datetime.now(timezone):
+    chapter = chapter.lower().replace(" ", "_") + ".html"
+    return render(request, f"main/working_rules/{subject}/Chapters/{topic}/{chapter}")
+   else:
+        return HttpResponseRedirect(reverse('join'))
+   
 @login_required
 def generate_test(request, subject):
     user_profile = UserProfile.objects.get(user=request.user)
@@ -153,6 +173,7 @@ def generate_test(request, subject):
 
     # Get all available question IDs for the chosen subject
       all_question_ids = ExamQuestion.objects.filter(subject=subject).values_list('id', flat=True)
+      
 
     # Randomly select 90 question IDs for the test
       selected_question_ids = sample(list(all_question_ids), 10)
@@ -167,6 +188,7 @@ def test_page(request, subject, question_ids):
     # Split the question_ids string into a list of integers
     question_ids = [int(id) for id in question_ids.split(',')]
     questions = ExamQuestion.objects.filter(id__in=question_ids)
+    
     context = {
         'subject': subject,
         'question_ids': question_ids,
@@ -188,7 +210,7 @@ def submit_test(request):
 
         # Now you have a dictionary with question IDs as keys and selected answer option IDs as values.
         # You can perform grading logic here.
-        total_questions = 2
+        total_questions = 10
         print(total_questions)
         correct_answers = 0
 

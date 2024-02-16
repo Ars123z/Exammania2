@@ -52,7 +52,7 @@ class ExamQuestionIntermidiate(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             # Set the order based on the number of existing questions for the exercise
-            self.question_order = self.exercise.questions.count() + 1
+            self.question_order = self.exam.questions.count() + 1
         super().save(*args, **kwargs)
 
 

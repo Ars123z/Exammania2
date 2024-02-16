@@ -1,7 +1,7 @@
 import csv
 from django.db import IntegrityError
 
-from .models import Exam, ExamQuestion, ExamQuestionOptions
+from .models import Exam, ExamQuestion, ExamQuestionOptions, ExamQuestionIntermidiate
 
 def upload_exam_data(file_path):
     """Uploads exam data from a CSV file to the Django database.
@@ -11,9 +11,10 @@ def upload_exam_data(file_path):
     """
     exam_name= 'jee_mains'
     exam_year= 2013
-
+    exam_name= "jee_mains"
+    exam = Exam.objects.get(name=exam_name, year=2013)
     with open(file_path, "r", encoding="utf-8") as f:
-        reader = csv.reader(f)
+        reader = csv.reader(f, delimiter='|')
 
         for row in reader:
             # Get the exam name and year.
@@ -28,7 +29,7 @@ def upload_exam_data(file_path):
             # Get the option contents.
             option_contents = row[4:8]
             correct = row[8:]
-            print(correct)
+            print(question_body)
             print(option_contents)
 
             # Check if the question exists.
@@ -63,12 +64,20 @@ def upload_exam_data(file_path):
             
 
             question.correct_options.set(correct_options)
+            question.save()
+
+
+            try:
+                Intermidiate = ExamQuestionIntermidiate.objects.get(exam=exam , question= question)
+            except ExamQuestionIntermidiate.DoesNotExist:
+                ExamQuestionIntermidiate.objects.create(exam=exam, question=question)
+
+
 
             # Add the question to the exam.
             # exam = Exam(name=exam_name, year=exam_year)
             # exam.save()
-            exam = Exam.objects.get(name=exam_name, year=exam_year)
-            exam.questions.add(question)
+            
 
             # Save the exam.
             
